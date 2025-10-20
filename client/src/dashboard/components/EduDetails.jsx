@@ -13,7 +13,7 @@ const EduDetails = () => {
         </tr>
       </thead>
       <tbody>
-        <EduRow /> {/* ✅ self-closing tag */}
+        <EduRow /> 
       </tbody>
     </table>
   );
