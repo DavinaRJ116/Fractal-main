@@ -1,7 +1,22 @@
+// CreateProfile.jsx
 import React, { useState, useEffect } from "react";
 import { useMatch, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import {
+  Box,
+  Button,
+  Container,
+  TextField,
+  Typography,
+  Stack,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import { createProfileAction, getCurrentProfileAction } from "../../redux/action/profile.action";
+import CommonTextFields from "../../../core/components/common/TextFields";
+import CommonButton from "../../../core/components/common/Button";
 
 const emptyForm = {
   company: "",
@@ -19,13 +34,12 @@ const emptyForm = {
 };
 
 const CreateProfile = () => {
-  const isCreate = Boolean(useMatch("profile/createprofile"));
+  const isCreate = Boolean(useMatch("/profile/create-profile"));
   const [formState, setFormState] = useState(emptyForm);
   const [displaySocialInputs, toggleSocialInputs] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const { profile, error } = useSelector((state) => state.profile);
+  const { profile } = useSelector((state) => state.profile);
 
   const {
     company,
@@ -42,143 +56,111 @@ const CreateProfile = () => {
     instagram,
   } = formState;
 
-  // Fetch profile on mount
   useEffect(() => {
     dispatch(getCurrentProfileAction());
   }, [dispatch]);
 
-  // Update formState when profile changes
   useEffect(() => {
     if (profile) {
       const profileData = { ...emptyForm };
-
       for (const key in profile) {
         if (key in profileData && key !== "social") {
           profileData[key] = profile[key] || "";
         }
       }
-
-      if (Array.isArray(profile.skills)) {
-        profileData.skills = profile.skills.join(",");
-      }
-
+      if (Array.isArray(profile.skills)) profileData.skills = profile.skills.join(",");
       if (profile.social) {
         for (const key in profile.social) {
-          if (key in profileData) {
-            profileData[key] = profile.social[key] || "";
-          }
+          if (key in profileData) profileData[key] = profile.social[key] || "";
         }
-
-        // Automatically show social inputs if any link exists
-        const hasSocial = Object.values(profile.social).some((val) => val && val.trim() !== "");
-        if (hasSocial) toggleSocialInputs(true);
+        if (Object.values(profile.social).some((val) => val?.trim() !== "")) toggleSocialInputs(true);
       }
-
       setFormState(profileData);
     }
   }, [profile]);
 
   const onChange = (e) => {
-    setFormState({
-      ...formState,
-      [e.target.name]: e.target.value,
-    });
+    setFormState({ ...formState, [e.target.name]: e.target.value });
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    dispatch(createProfileAction(formState)).unwrap();
-    navigate("/dashboard");
+    try {
+      await dispatch(createProfileAction(formState)).unwrap();
+      await dispatch(getCurrentProfileAction()); // Refresh
+      navigate("/dashboard");
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const showSocialInputs = (
-    <>
-      <div className="form-group social-input">
-        <i className="fab fa-twitter fa-2x"></i>
-        <input type="text" placeholder="Twitter URL" name="twitter" value={twitter} onChange={onChange} />
-      </div>
-      <div className="form-group social-input">
-        <i className="fab fa-facebook fa-2x"></i>
-        <input type="text" placeholder="Facebook URL" name="facebook" value={facebook} onChange={onChange} />
-      </div>
-      <div className="form-group social-input">
-        <i className="fab fa-youtube fa-2x"></i>
-        <input type="text" placeholder="YouTube URL" name="youtube" value={youtube} onChange={onChange} />
-      </div>
-      <div className="form-group social-input">
-        <i className="fab fa-linkedin fa-2x"></i>
-        <input type="text" placeholder="Linkedin URL" name="linkedin" value={linkedin} onChange={onChange} />
-      </div>
-      <div className="form-group social-input">
-        <i className="fab fa-instagram fa-2x"></i>
-        <input type="text" placeholder="Instagram URL" name="instagram" value={instagram} onChange={onChange} />
-      </div>
-    </>
+  const socialInputs = displaySocialInputs && (
+    <Stack spacing={2} mt={2}>
+      {["twitter", "facebook", "youtube", "linkedin", "instagram"].map((key) => (
+        <CommonTextFields
+          key={key}
+          label={`${key.charAt(0).toUpperCase() + key.slice(1)} URL`}
+          name={key}
+          value={formState[key]}
+          onChange={onChange}
+          fullWidth
+        />
+      ))}
+    </Stack>
   );
 
   return (
-    <>
-      <section className="container">
-        {isCreate ? (
-          <h1 className="large text-primary">Create your profile</h1>
-        ) : (
-          <h1 className="large text-primary">Edit your profile</h1>
-        )}
-        <p className="lead">
-          <i className="fas fa-user"></i> Let's get some information to make your profile stand out
-        </p>
-        <small>* = required field</small>
-        <form className="form" onSubmit={onSubmit}>
-          <div className="form-group">
-            <select name="status" value={status} onChange={onChange}>
-              <option value="0">* Select Professional Status</option>
-              <option value="Developer">Developer</option>
-              <option value="Junior Developer">Junior Developer</option>
-              <option value="Senior Developer">Senior Developer</option>
-              <option value="Manager">Manager</option>
-              <option value="Student or Learning">Student or Learning</option>
-              <option value="Instructor">Instructor or Teacher</option>
-              <option value="Intern">Intern</option>
-              <option value="Other">Other</option>
-            </select>
-            <small className="form-text">Give us an idea of where you are at in your career</small>
-          </div>
-          <div className="form-group">
-            <input type="text" placeholder="Company" name="company" value={company} onChange={onChange} />
-            <small className="form-text">Could be your own company or one you work for</small>
-          </div>
-          <div className="form-group">
-            <input type="text" placeholder="Website" name="website" value={website} onChange={onChange} />
-            <small className="form-text">Could be your own or a company website</small>
-          </div>
-          <div className="form-group">
-            <input type="text" placeholder="Location" name="location" value={location} onChange={onChange} />
-            <small className="form-text">City & state suggested (eg. Boston, MA)</small>
-          </div>
-          <div className="form-group">
-            <input type="text" placeholder="* Skills" name="skills" value={skills} onChange={onChange} />
-            <small className="form-text">Please use comma separated values (eg. HTML,CSS,JavaScript,PHP)</small>
-          </div>
-          <div className="form-group">
-            <input type="text" placeholder="Github Username" name="githubusername" value={githubusername} onChange={onChange} />
-            <small className="form-text">If you want your latest repos and a Github link, include your username</small>
-          </div>
-          <div className="form-group">
-            <textarea placeholder="A short bio of yourself" name="bio" value={bio} onChange={onChange}></textarea>
-            <small className="form-text">Tell us a little about yourself</small>
-          </div>
-          <div className="my-2">
-            <button type="button" className="btn btn-light" onClick={() => toggleSocialInputs(!displaySocialInputs)}>
-              {displaySocialInputs ? "Hide social details" : "Add Social Network links"}
-            </button>
-            <span>Optional</span>
-          </div>
-          {displaySocialInputs && showSocialInputs}
-          <input type="submit" className="btn btn-primary my-1" />
-          <a className="btn btn-light my-1" href="dashboard.html">Go Back</a>
-        </form>
-      </section>
-    </>
+    <Container maxWidth="sm" sx={{ py: 8 }}>
+      <Typography variant="h4" fontWeight={700} gutterBottom>
+        {isCreate ? "Create Your Profile" : "Edit Your Profile"}
+      </Typography>
+      <Typography variant="body1" gutterBottom>
+        Let's get some information to make your profile stand out
+      </Typography>
+      <Box component="form" onSubmit={onSubmit} sx={{ mt: 3 }}>
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <InputLabel>* Select Professional Status</InputLabel>
+          <Select name="status" value={status} onChange={onChange}>
+            {[
+              "Developer",
+              "Junior Developer",
+              "Senior Developer",
+              "Manager",
+              "Student or Learning",
+              "Instructor",
+              "Intern",
+              "Other",
+            ].map((opt) => (
+              <MenuItem key={opt} value={opt}>
+                {opt}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <CommonTextFields fullWidth placeholder="Company" name="company" value={company} onChange={onChange} sx={{ mb: 2 }} />
+        <CommonTextFields fullWidth placeholder="Website" name="website" value={website} onChange={onChange} sx={{ mb: 2 }} />
+        <CommonTextFields fullWidth placeholder="Location" name="location" value={location} onChange={onChange} sx={{ mb: 2 }} />
+        <CommonTextFields fullWidth placeholder="* Skills" name="skills" value={skills} onChange={onChange} sx={{ mb: 2 }} />
+        <CommonTextFields fullWidth placeholder="Github Username" name="githubusername" value={githubusername} onChange={onChange} sx={{ mb: 2 }} />
+        <CommonTextFields fullWidth placeholder="A short bio of yourself" name="bio" value={bio} onChange={onChange} sx={{ mb: 2 }} multiline rows={3} />
+
+        <CommonButton variant="outlined" sx={{ mb: 2 }} onClick={() => toggleSocialInputs(!displaySocialInputs)}>
+          {displaySocialInputs ? "Hide Social Links" : "Add Social Network Links"}
+        </CommonButton>
+
+        {socialInputs}
+
+        <Stack direction="row" spacing={2} mt={3}>
+          <CommonButton type="submit" variant="contained" color="primary">
+            Submit
+          </CommonButton>
+          <CommonButton variant="outlined" onClick={() => navigate("/dashboard")}>
+            Go Back
+          </CommonButton>
+        </Stack>
+      </Box>
+    </Container>
   );
 };
 

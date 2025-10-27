@@ -1,11 +1,24 @@
+// AddExp.jsx
 import React, { useState } from "react";
-import { useMatch, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addExperienceAction } from "../../redux/action/profile.action";
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Stack,
+  FormControlLabel,
+  Checkbox,
+  Box,
+} from "@mui/material";
 
 const AddExp = () => {
-  const isAdd = Boolean(useMatch("/profile/add-experience"));
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [formState, setFormState] = useState({
+  const [exp, setExp] = useState({
     title: "",
     company: "",
     location: "",
@@ -15,108 +28,119 @@ const AddExp = () => {
     description: "",
   });
 
-  const { title, company, location, from, to, current, description } = formState;
-
-  const onChange = (e) => {
+  const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormState({
-      ...formState,
+    setExp((prev) => ({
+      ...prev,
       [name]: type === "checkbox" ? checked : value,
-    });
+    }));
   };
 
-  const onSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formState); // Here you can dispatch to redux or send to backend
-    navigate("/dashboard");
+    try {
+      await dispatch(addExperienceAction(exp)).unwrap();
+      console.log("Experience added successfully");
+      navigate("/dashboard"); // Redirect after successful submission
+    } catch (err) {
+      console.error("Failed to add experience:", err);
+    }
   };
 
   return (
-    <>
-      <section className="container">
-        <h1 className="large text-primary">
-          {isAdd ? "Add An Experience" : "Edit Experience"}
-        </h1>
-        <p className="lead">
-          <i className="fas fa-code-branch"></i> Add any developer/programming positions that you have had in the past
-        </p>
-        <small>* = required field</small>
-        <form className="form" onSubmit={onSubmit}>
-          <div className="form-group">
-            <input
-              type="text"
-              placeholder="* Job Title"
-              name="title"
-              value={title}
-              onChange={onChange}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <input
-              type="text"
-              placeholder="* Company"
-              name="company"
-              value={company}
-              onChange={onChange}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <input
-              type="text"
-              placeholder="Location"
-              name="location"
-              value={location}
-              onChange={onChange}
-            />
-          </div>
-          <div className="form-group">
-            <h4>From Date</h4>
-            <input
-              type="date"
-              name="from"
-              value={from}
-              onChange={onChange}
-            />
-          </div>
-          <div className="form-group">
-            <p>
-              <input
-                type="checkbox"
+    <Container maxWidth="sm" sx={{ py: 8 }}>
+      <Typography variant="h4" fontWeight={700} gutterBottom>
+        Add An Experience
+      </Typography>
+      <Typography variant="body1" gutterBottom>
+        <i className="fas fa-code-branch"></i> Add any developer/programming
+        positions that you have had in the past
+      </Typography>
+      <Typography variant="body2" gutterBottom>
+        * = required field
+      </Typography>
+
+      <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <Stack spacing={2}>
+          <TextField
+            label="* Job Title"
+            name="title"
+            value={exp.title}
+            onChange={handleChange}
+            required
+            fullWidth
+          />
+
+          <TextField
+            label="* Company"
+            name="company"
+            value={exp.company}
+            onChange={handleChange}
+            required
+            fullWidth
+          />
+
+          <TextField
+            label="Location"
+            name="location"
+            value={exp.location}
+            onChange={handleChange}
+            fullWidth
+          />
+
+          <TextField
+            label="From Date"
+            name="from"
+            type="date"
+            value={exp.from}
+            onChange={handleChange}
+            InputLabelProps={{ shrink: true }}
+            fullWidth
+          />
+
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={exp.current}
+                onChange={handleChange}
                 name="current"
-                checked={current}
-                onChange={onChange}
-              /> Current Job
-            </p>
-          </div>
-          <div className="form-group">
-            <h4>To Date</h4>
-            <input
-              type="date"
-              name="to"
-              value={to}
-              onChange={onChange}
-              disabled={current}
-            />
-          </div>
-          <div className="form-group">
-            <textarea
-              name="description"
-              cols="30"
-              rows="5"
-              placeholder="Job Description"
-              value={description}
-              onChange={onChange}
-            ></textarea>
-          </div>
-          <input type="submit" className="btn btn-primary my-1" />
-          <a className="btn btn-light my-1" href="dashboard.html">
-            Go Back
-          </a>
-        </form>
-      </section>
-    </>
+              />
+            }
+            label="Current Job"
+          />
+
+          <TextField
+            label="To Date"
+            name="to"
+            type="date"
+            value={exp.to}
+            onChange={handleChange}
+            InputLabelProps={{ shrink: true }}
+            fullWidth
+            disabled={exp.current}
+          />
+
+          <TextField
+            label="Job Description"
+            name="description"
+            value={exp.description}
+            onChange={handleChange}
+            fullWidth
+            multiline
+            rows={4}
+          />
+
+          <Stack direction="row" spacing={2} mt={2}>
+            <Button type="submit" variant="contained" color="primary">
+              Submit
+            </Button>
+            <Button variant="outlined" onClick={() => navigate("/dashboard")}>
+              Go Back
+            </Button>
+          </Stack>
+        </Stack>
+      </Box>
+    </Container>
   );
 };
 

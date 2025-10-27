@@ -1,7 +1,9 @@
 import React from "react";
-import EduRow from "./EduRow"; // ✅ default import
+import EduRow from "./EduRow";
 
-const EduDetails = () => {
+const EduDetails = ({ education }) => {
+  if (!education.length) return <p>No education added yet.</p>;
+
   return (
     <table className="table">
       <thead>
@@ -9,11 +11,13 @@ const EduDetails = () => {
           <th>School</th>
           <th className="hide-sm">Degree</th>
           <th className="hide-sm">Years</th>
-          <th />
+          <th></th>
         </tr>
       </thead>
       <tbody>
-        <EduRow /> 
+        {education.map((edu) => (
+          <EduRow key={edu._id} edu={edu} />
+        ))}
       </tbody>
     </table>
   );

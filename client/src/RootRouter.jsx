@@ -4,6 +4,7 @@ import Landing from "./core/components/layout/Landing";
 import AuthRouter from "./auth/router/AuthRouter";
 import DashboardRouter from "./dashboard/router/DashboardRouter";
 import ProfileRouter from "./profiles/router/ProfileRouter"
+import PostRouter from "./posts/router/PostRouter";
 
 const RootRouter = () => {
   return (
@@ -18,6 +19,8 @@ const RootRouter = () => {
         {/* Dashboard Routes */}
         <Route path="/dashboard/*" element={<DashboardRouter/>} />
         <Route path="/profile/*"  element={<ProfileRouter/>}/>
+        <Route path="/post/*"  element={<PostRouter/>}/>
+
 
         
       </Routes>

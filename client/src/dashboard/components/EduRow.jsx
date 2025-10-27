@@ -1,17 +1,17 @@
 import React from "react";
 
-const EduRow = () => {
-  return (
-    <tr>
-      <td>Northern Essex</td>
-      <td className="hide-sm">Associates</td>
-      <td className="hide-sm">02-03-2007 - 01-02-2009</td>
-      <td>
-        <button className="btn btn-danger">Delete</button>
-      </td>
-    </tr>
-  );
-};
+const EduRow = ({ edu }) => (
+  <tr>
+    <td>{edu.school}</td>
+    <td className="hide-sm">{edu.degree}</td>
+    <td className="hide-sm">
+      {new Date(edu.from).toLocaleDateString()} -{" "}
+      {edu.current ? "Now" : new Date(edu.to).toLocaleDateString()}
+    </td>
+    <td>
+      <button className="btn btn-danger">Delete</button>
+    </td>
+  </tr>
+);
 
-export default EduRow; // ✅ must be default export
-
+export default EduRow;

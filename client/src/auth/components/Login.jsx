@@ -1,63 +1,126 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { loginUserAction } from "../redux/action/authAction";
+import {
+  Container,
+  Box,
+  Typography,
+  Stack,
+  Link,
+  Paper,
+} from "@mui/material";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
+import LoginIcon from "@mui/icons-material/Login";
+import CommonTextFields from "../../core/components/common/TextFields";
+import CommonButton from "../../core/components/common/Button";
+
+const initialState = {
+  email: "",
+  password: "",
+};
 
 const Login = () => {
-  const dispatch = useDispatch(); // to call the action
-
-  const initialState = {
-    email: "",
-    password: "",
-  };
-
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [loginData, setLoginData] = useState(initialState);
 
-  const onchange = (e) => {
+  // Handle change
+  const onChange = (e) => {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
   };
 
-  const onsubmit = (e) => {
+  // Handle submit
+  const onSubmit = (e) => {
     e.preventDefault();
     console.log(loginData);
     dispatch(loginUserAction(loginData));
+    navigate("/dashboard");
   };
 
   const { email, password } = loginData;
 
   return (
-    <section className="container">
-      <div className="alert alert-danger">Invalid credentials</div>
-      <h1 className="large text-primary">Sign In</h1>
-      <p className="lead">
-        <i className="fas fa-user"></i> Sign into Your Account
-      </p>
-      <form className="form" onSubmit={onsubmit}>
-        <div className="form-group">
-          <input
-            type="email"
-            placeholder="Email Address"
-            name="email"
-            required
-            value={email}
-            onChange={onchange}
-          />
-        </div>
-        <div className="form-group">
-          <input
-            type="password"
-            placeholder="Password"
-            name="password"
-            required
-            value={password}
-            onChange={onchange}
-          />
-        </div>
-        <input type="submit" className="btn btn-primary" value="Login" />
-      </form>
-      <p className="my-1">
-        Don't have an account? <a href="register.html">Sign Up</a>
-      </p>
-    </section>
+    <Container
+      maxWidth="sm"
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: "100vh", // ✅ ensures the entire form is centered vertically
+      }}
+    >
+      <Paper
+        elevation={4}
+        sx={{
+          p: 4,
+          borderRadius: 3,
+          width: "100%",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+        }}
+      >
+        {/* Header */}
+        <Box textAlign="center" mb={3}>
+          <Typography variant="h4" color="primary" fontWeight={700}>
+            Sign In
+          </Typography>
+          <Typography variant="subtitle1" color="text.secondary">
+            <LoginIcon sx={{ verticalAlign: "middle", mr: 1 }} />
+            Sign into Your Account
+          </Typography>
+        </Box>
+
+        {/* Form */}
+        <Box component="form" onSubmit={onSubmit}>
+          <Stack spacing={2}>
+            <CommonTextFields
+              label="Email Address"
+              name="email"
+              type="email"
+              required
+              fullWidth
+              value={email}
+              onChange={onChange}
+            />
+            <CommonTextFields
+              label="Password"
+              name="password"
+              type="password"
+              required
+              fullWidth
+              value={password}
+              onChange={onChange}
+            />
+            <CommonButton
+              type="submit"
+              variant="contained"
+              color="success"
+              size="large"
+              label="Login"
+              sx={{
+                py: 1.2,
+                textTransform: "none",
+                fontWeight: 600,
+                mt: 1,
+              }}
+            />
+          </Stack>
+        </Box>
+
+        {/* Footer */}
+        <Typography variant="body1" align="center" sx={{ mt: 3 }}>
+          Don’t have an account?{" "}
+          <Link
+            component={RouterLink}
+            to="/auth/register"
+            underline="hover"
+            color="primary"
+            fontWeight={600}
+          >
+            Sign Up
+          </Link>
+        </Typography>
+      </Paper>
+    </Container>
   );
 };
 

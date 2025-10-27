@@ -8,12 +8,14 @@ const DashboardAction = () => {
         <Link to="/profile/create-profile" className="btn btn-light">
           <i className="fas fa-user-circle text-primary"></i> Edit Profile
         </Link>
+
         <Link to="/profile/add-experience" className="btn btn-light">
-          <i className="fab fa-black-tie text-primary"></i> Add Experience</Link>
-       
-        <a href="add-education.html" className="btn btn-light">
+          <i className="fab fa-black-tie text-primary"></i> Add Experience
+        </Link>
+
+        <Link to="/profile/add-education" className="btn btn-light">
           <i className="fas fa-graduation-cap text-primary"></i> Add Education
-        </a>
+        </Link>
       </div>
     </>
   );

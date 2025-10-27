@@ -1,46 +1,38 @@
+// ExpDetails.jsx
 import React from "react";
+import ExpRow from "./ExpRow";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from "@mui/material";
 
-const ExpDetails = () =>{
-    return (
-        <>
-        <h2 class="my-2">Experience Credentials</h2>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Company</th>
-            <th class="hide-sm">Title</th>
-            <th class="hide-sm">Years</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Tech Guy Web Solutions</td>
-            <td class="hide-sm">Senior Developer</td>
-            <td class="hide-sm">
-              02-03-2009 - 01-02-2014
-            </td>
-            <td>
-              <button class="btn btn-danger">
-                Delete
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <td>Traversy Media</td>
-            <td class="hide-sm">Instructor & Developer</td>
-            <td class="hide-sm">
-              02-03-2015 - Now
-            </td>
-            <td>
-              <button class="btn btn-danger">
-                Delete
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-        </>
-    )
-}
-export default ExpDetails
+const ExpDetails = ({ experience }) => {
+  if (!experience.length) return <p>No experience added yet.</p>;
+
+  return (
+    <TableContainer component={Paper} sx={{ backgroundColor: "#1f2937" }}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell sx={{ color: "white" }}>Company</TableCell>
+            <TableCell sx={{ color: "white" }}>Title</TableCell>
+            <TableCell sx={{ color: "white" }}>Years</TableCell>
+            <TableCell></TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {experience.map((exp) => (
+            <ExpRow key={exp._id} exp={exp} />
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+};
+
+export default ExpDetails;
