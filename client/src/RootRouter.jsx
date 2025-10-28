@@ -5,6 +5,7 @@ import AuthRouter from "./auth/router/AuthRouter";
 import DashboardRouter from "./dashboard/router/DashboardRouter";
 import ProfileRouter from "./profiles/router/ProfileRouter"
 import PostRouter from "./posts/router/PostRouter";
+import Mainprofile from "./profiles/router/Mainprofile"
 
 const RootRouter = () => {
   return (
@@ -20,6 +21,7 @@ const RootRouter = () => {
         <Route path="/dashboard/*" element={<DashboardRouter/>} />
         <Route path="/profile/*"  element={<ProfileRouter/>}/>
         <Route path="/post/*"  element={<PostRouter/>}/>
+        <Route path="/mainprofile/*" element={<Mainprofile/>}/>
 
 
         

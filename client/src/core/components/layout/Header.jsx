@@ -46,7 +46,7 @@ const Header = () => {
           <CommonButton
             color="black"
             component={RouterLink}
-            to="/profiles"
+            to="/mainprofile"
             sx={{ textTransform: "none" }}
           >
             Developers

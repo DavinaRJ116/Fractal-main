@@ -12,6 +12,7 @@ const CommonButton = ({
 }) => {
   return (
     <MuiButton
+      {...rest} // spread first so type, disabled, etc., are preserved
       variant={variant}
       color={color}
       onClick={onClick}
@@ -23,7 +24,6 @@ const CommonButton = ({
         py: 1,
         ...sx, // allow page-level overrides
       }}
-      {...rest}
     >
       {label || children}
     </MuiButton>
